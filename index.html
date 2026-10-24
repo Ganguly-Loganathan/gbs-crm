@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBS Systems CRM</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#182230}
+.layout{display:flex;min-height:100vh}
+aside{width:235px;background:#111c32;color:white;padding:26px 18px}
+.brand{font-size:22px;font-weight:bold;margin-bottom:38px}
+.brand span{color:#60a5fa}
+nav a{display:block;color:#cbd5e1;text-decoration:none;padding:14px 12px;border-radius:8px;margin:5px 0}
+nav a.active,nav a:hover{background:#263754;color:white}
+main{flex:1;min-width:0;padding:28px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+h1{font-size:27px;margin:0 0 7px}
+.muted{color:#718096;font-size:14px}
+button{background:#2563eb;color:white;border:0;padding:11px 15px;border-radius:8px;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:16px;margin-bottom:24px}
+.card,.panel{background:white;border:1px solid #e6ebf2;border-radius:13px;padding:20px}
+.card .number{font-size:29px;font-weight:bold;margin-top:13px}
+.panel{overflow-x:auto}
+.panel h2{font-size:18px;margin:0 0 18px}
+table{width:100%;border-collapse:collapse;text-align:left;min-width:600px}
+th,td{padding:14px 10px;border-bottom:1px solid #edf0f5;font-size:14px}
+th{color:#718096;font-weight:600}
+.status{background:#dbeafe;color:#1d4ed8;padding:6px 9px;border-radius:20px;font-size:12px}
+.green{background:#dcfce7;color:#166534}
+.toolbar{display:flex;gap:10px;margin-bottom:18px}
+input{padding:11px;border:1px solid #d7deea;border-radius:8px;max-width:100%;width:280px}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}aside{width:180px}}
+@media(max-width:600px){.layout{display:block}aside{width:100%;padding:16px}.brand{margin-bottom:12px}nav{display:flex;overflow-x:auto}nav a{white-space:nowrap;padding:10px}main{padding:18px}.cards{gap:10px}.card{padding:14px}.card .number{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand">GBS <span>CRM</span></div>
+  <nav>
+    <a class="active" href="#dashboard">Dashboard</a>
+    <a href="#leads">Leads</a>
+    <a href="#followups">Follow-ups</a>
+    <a href="#reports">Reports</a>
+    <a href="#settings">Integrations</a>
+  </nav>
+  <p class="muted" style="color:#9baac1;margin-top:35px">GBS Systems & Services</p>
+</aside>
+<main id="dashboard">
+<header>
+  <div>
+    <h1>CRM Dashboard</h1>
+    <div class="muted">Manage enquiries and sales follow-ups</div>
+  </div>
+  <button onclick="addLead()">+ Add Lead</button>
+</header>
+<section class="cards">
+  <div class="card"><div class="muted">Total Leads</div><div class="number" id="total">128</div></div>
+  <div class="card"><div class="muted">New Leads</div><div class="number">24</div></div>
+  <div class="card"><div class="muted">Follow-ups Due</div><div class="number">12</div></div>
+  <div class="card"><div class="muted">Converted</div><div class="number">36</div></div>
+</section>
+<section class="panel" id="leads">
+  <h2>Recent Leads</h2>
+  <div class="toolbar">
+    <input id="search" placeholder="Search leads..." oninput="filterLeads()">
+  </div>
+  <table>
+    <thead><tr><th>Name</th><th>Enquiry</th><th>Source</th><th>Status</th></tr></thead>
+    <tbody id="leadRows">
+      <tr><td>Arun Kumar</td><td>Laptop Service</td><td>Website</td><td><span class="status">New</span></td></tr>
+      <tr><td>Priya S</td><td>Product Enquiry</td><td>Google Ads</td><td><span class="status">Contacted</span></td></tr>
+      <tr><td>Rajesh M</td><td>IT Equipment</td><td>Meta Ads</td><td><span class="status green">Qualified</span></td></tr>
+      <tr><td>Vijay R</td><td>Annual Maintenance</td><td>Website</td><td><span class="status">New</span></td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Demo data only — no real leads are connected yet.</p>
+</section>
+</main>
+</div>
+<script>
+function filterLeads(){
+  const q=document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('#leadRows tr').forEach(row=>{
+    row.style.display=row.innerText.toLowerCase().includes(q)?'':'none';
+  });
+}
+function addLead(){
+  const name=prompt('Enter lead name:');
+  if(!name)return;
+  const enquiry=prompt('Enter enquiry type:')||'General Enquiry';
+  const row=document.createElement('tr');
+  [name,enquiry,'Manual'].forEach(value=>{
+    const cell=document.createElement('td');
+    cell.textContent=value;
+    row.appendChild(cell);
+  });
+  const status=document.createElement('td');
+  status.innerHTML='<span class="status">New</span>';
+  row.appendChild(status);
+  document.getElementById('leadRows').prepend(row);
+  document.getElementById('total').textContent=
+    Number(document.getElementById('total').textContent)+1;
+}
+</script>
+</body>
+</html>
