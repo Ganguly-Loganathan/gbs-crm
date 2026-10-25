@@ -135,7 +135,7 @@ profileButton.addEventListener('click',function(e){e.stopPropagation();const ope
 document.addEventListener('click',function(e){if(!e.target.closest('.profile-menu-wrap')){profileMenu.classList.remove('open');profileButton.setAttribute('aria-expanded','false');}});
 document.getElementById('signOutButton').addEventListener('click',function(){sessionStorage.removeItem('gbsCrmPreviewSignedIn');setLoginState(false);document.getElementById('loginPassword').value='';});
 
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbx5QDiI3R0dAbKzuFo0sKZDiWOV3bsR4HRXEkt0QAOB/devhttps://script.google.com/macros/s/AKfycbwAGRMO9Xstw5R4lL7fXjrpPEsUVk4k1YIkZiNoX1j91pJjb0mWzovddW9HQUCBWAGyVQ/exec';
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbwAGRMO9Xstw5R4lL7fXjrpPEsUVk4k1YIkZiNoX1j91pJjb0mWzovddW9HQUCBWAGyVQ/exec';
 
 async function loadSheetLeads() {
   const tbody = document.getElementById('leadsTableBody');
