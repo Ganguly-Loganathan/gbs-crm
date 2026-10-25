@@ -120,87 +120,173 @@ textarea {
   }
 }
 
-/* Mobile */
+
+/* MOBILE SIDEBAR + GBS LOGO FIX */
 @media (max-width: 768px) {
   .sidebar {
-    display: none;
+    display: flex !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(280px, 85vw) !important;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 1000;
+    flex-direction: column;
+    overflow-y: auto;
+    background: #fff;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.18);
   }
 
+  .sidebar.mobile-open,
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Preserve red GBS branding */
+  .sidebar .brand,
+  .sidebar .logo,
+  .sidebar .logo-container,
+  .sidebar .sidebar-header {
+    display: flex !important;
+    flex-shrink: 0;
+    width: 100%;
+    min-height: 100px;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    background: #c40000;
+    color: #fff;
+  }
+
+  .sidebar .brand-mark {
+    display: grid;
+    flex-shrink: 0;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    color: #fff;
+  }
+
+  .sidebar .brand-copy {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  /* Mobile menu button */
+  .mobile-menu-toggle,
+  #menuToggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 10px;
+    background: #c40000;
+    color: #fff;
+    font-size: 23px;
+    cursor: pointer;
+  }
+
+  /* Full-width page on mobile */
+  .workspace,
   .main-content,
   .main,
+  main,
   .content,
   .page-content {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 16px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
   }
 
-  .page-header,
-  .header,
-  .section-header {
+  main,
+  .main-content,
+  .content,
+  .page-content {
+    padding: 16px !important;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #fff;
   }
 
-  h1,
-  h2 {
+  .topbar-left,
+  .topbar-right {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .topbar-right {
+    margin-left: auto;
+  }
+
+  /* Prevent dashboard cards from being squeezed */
+  .stats,
+  .stats-grid,
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card,
+  .card,
+  .panel {
+    min-width: 0;
+    max-width: 100%;
     overflow-wrap: anywhere;
   }
 
-  .card,
-  .panel,
-  .leads-container {
-    width: 100%;
+  /* Keep tables usable */
+  .table-wrap,
+  .table-container,
+  .table-responsive {
     max-width: 100%;
-    min-width: 0;
-    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   table {
     min-width: 650px;
   }
-
-  .search-box,
-  input[type="search"] {
-    width: 100%;
-  }
-
-  button {
-    min-height: 40px;
-  }
 }
 
-/* Small phones */
-@media (max-width: 480px) {
-  .main-content,
-  .main,
-  .content,
-  .page-content {
-    padding: 12px;
-  }
+/* Dim background when sidebar opens */
+.mobile-menu-overlay,
+#navOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.45);
+}
 
-  .card,
-  .panel,
-  .leads-container {
-    padding: 12px;
-  }
+.mobile-menu-overlay[hidden],
+#navOverlay[hidden] {
+  display: none !important;
+}
 
-  .page-header,
-  .header,
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .page-header button,
-  .header button,
-  .section-header button {
-    width: fit-content;
-    max-width: 100%;
+@media (min-width: 769px) {
+  #menuToggle,
+  .mobile-menu-toggle,
+  #navOverlay,
+  .mobile-menu-overlay {
+    display: none !important;
   }
 }
 </style></head>
