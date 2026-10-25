@@ -105,8 +105,9 @@ h1{font-size:24px;margin:0 0 7px;font-weight:750}.sub{font-size:13px;color:#6468
    <tr><td>Demo Customer 04</td><td>AMC Enquiry</td><td>Annual Maintenance</td><td class="source">Website</td><td><span class="pill gray">Normal</span></td><td><span class="pill">New</span></td></tr>
    </tbody></table></div><p class="muted">Demo data only — connect the CRM API to display live enquiries.</p></div>
   </section>
-  <section class="section" id="leads"><div class="pagehead"><div><h1>Leads &amp; Enquiries</h1><div class="sub">Track laptop sales, product enquiries and service leads</div></div><button class="primary" onclick="alert('Lead form will be connected to the backend in the next phase.')">+ Add Lead</button></div><div class="panel"><div class="panel-head"><h2>All Leads</h2><input class="search" id="leadSearch" placeholder="Search customer, product or source..." oninput="filterRows()"></div><div class="table-wrap"><table id="leadsTable"><thead><tr><th>Customer</th><th>Enquiry Type</th><th>Product / Service</th><th>Source</th><th>Priority</th><th>Status</th></tr></thead><tbody>
-  <tr><td>Demo Customer 01</td><td>Laptop Sales</td><td>Business Laptop</td><td>Website</td><td>High</td><td>New</td></tr><tr><td>Demo Customer 02</td><td>Repair Request</td><td>Laptop Screen Repair</td><td>Google Ads</td><td>Urgent</td><td>Assigned</td></tr><tr><td>Demo Customer 03</td><td>Product Enquiry</td><td>Desktop &amp; Accessories</td><td>Meta Ads</td><td>Normal</td><td>Contacted</td></tr></tbody></table></div><p class="muted">Sample records only.</p></div></section>
+  <section class="section" id="leads"><div class="pagehead"><div><h1>Leads &amp; Enquiries</h1><div class="sub">Track laptop sales, product enquiries and service leads</div></div><button class="primary" onclick="alert('Lead form will be connected to the backend in the next phase.')">+ Add Lead</button></div><div class="panel"><div class="panel-head"><h2>All Leads</h2><input class="search" id="leadSearch" placeholder="Search customer, product or source..." oninput="filterRows()"></div><div class="table-wrap"><table id="leadsTable"><thead><tr><th>Customer</th><th>Enquiry Type</th><th>Product / Service</th><th>Source</th><th>Priority</th><th>Status</th></tr></thead><tbody id="leadsTableBody">
+  <tr><td colspan="6">Loading leads...</td></tr>
+</tbody></table></div><p class="muted">Sample records only.</p></div></section>
   <section class="section" id="customers"><h1>Customers</h1><div class="panel"><h2>Customer Directory</h2><p class="muted">Customer profiles, contact history, purchased devices and service history will connect to the CRM database.</p></div></section>
   <section class="section" id="sales"><h1>Sales &amp; Quotations</h1><div class="panel"><h2>Sales Pipeline</h2><p class="muted">Laptop and desktop quotations, order status, invoice references and won/lost sales will be managed here.</p></div></section>
   <section class="section" id="services"><h1>Service Tickets</h1><div class="panel"><h2>Laptop &amp; IT Service Requests</h2><p class="muted">Track device, serial number, reported issue, technician, repair status, parts used, warranty and delivery date.</p></div></section>
@@ -133,5 +134,52 @@ const profileButton=document.getElementById('profileButton');const profileMenu=d
 profileButton.addEventListener('click',function(e){e.stopPropagation();const open=profileMenu.classList.toggle('open');profileButton.setAttribute('aria-expanded',String(open));});
 document.addEventListener('click',function(e){if(!e.target.closest('.profile-menu-wrap')){profileMenu.classList.remove('open');profileButton.setAttribute('aria-expanded','false');}});
 document.getElementById('signOutButton').addEventListener('click',function(){sessionStorage.removeItem('gbsCrmPreviewSignedIn');setLoginState(false);document.getElementById('loginPassword').value='';});
+
+const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbx5QDiI3R0dAbKzuFo0sKZDiWOV3bsR4HRXEkt0QAOB/devhttps://script.google.com/macros/s/AKfycbwAGRMO9Xstw5R4lL7fXjrpPEsUVk4k1YIkZiNoX1j91pJjb0mWzovddW9HQUCBWAGyVQ/exec';
+
+async function loadSheetLeads() {
+  const tbody = document.getElementById('leadsTableBody');
+  if (!tbody) return;
+
+  try {
+    const response = await fetch(GOOGLE_SHEETS_API_URL);
+    if (!response.ok) throw new Error('Request failed');
+
+    const result = await response.json();
+    if (!result.success) throw new Error('Sheet API returned an error');
+
+    tbody.replaceChildren();
+
+    (result.leads || []).forEach(lead => {
+      const row = document.createElement('tr');
+
+      [
+        lead.name,
+        'General Enquiry',
+        lead.website || lead.company || '—',
+        lead.source || 'Google Sheets',
+        'Normal',
+        'New'
+      ].forEach(value => {
+        const cell = document.createElement('td');
+        cell.textContent = value || '—';
+        row.appendChild(cell);
+      });
+
+      tbody.appendChild(row);
+    });
+
+    if (!result.leads?.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="6">No leads found in Google Sheets.</td></tr>';
+    }
+  } catch (error) {
+    console.error('Unable to load leads:', error);
+    tbody.innerHTML =
+      '<tr><td colspan="6">Could not load leads. Check the API connection.</td></tr>';
+  }
+}
+
+loadSheetLeads();
 </script>
 </body></html>
