@@ -135,18 +135,38 @@ profileButton.addEventListener('click',function(e){e.stopPropagation();const ope
 document.addEventListener('click',function(e){if(!e.target.closest('.profile-menu-wrap')){profileMenu.classList.remove('open');profileButton.setAttribute('aria-expanded','false');}});
 document.getElementById('signOutButton').addEventListener('click',function(){sessionStorage.removeItem('gbsCrmPreviewSignedIn');setLoginState(false);document.getElementById('loginPassword').value='';});
 
-const GOOGLE_SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbwAGRMO9Xstw5R4lL7fXjrpPEsUVk4k1YIkZiNoX1j91pJjb0mWzovddW9HQUCBWAGyVQ/exec';
 
-async function loadSheetLeads() {
+const GOOGLE_SHEETS_API_URL =
+  'https://script.google.com/macros/s/AKfycbwAGRMO9Xstw5R4lL7fXjrpPEsUVk4k1YIkZiNoX1j91pJjb0mWzovddW9HQUCBWAGyVQ/exec';
+
+function loadSheetLeads() {
   const tbody = document.getElementById('leadsTableBody');
   if (!tbody) return;
 
-  try {
-    const response = await fetch(GOOGLE_SHEETS_API_URL);
-    if (!response.ok) throw new Error('Request failed');
+  tbody.replaceChildren();
 
-    const result = await response.json();
-    if (!result.success) throw new Error('Sheet API returned an error');
+  const script = document.createElement('script');
+  const callbackName =
+    'gbsLeadsCallback_' + Date.now();
+
+  const timeout = setTimeout(() => {
+    delete window[callbackName];
+    script.remove();
+
+    tbody.textContent =
+      'API timed out. Check your Apps Script deployment.';
+  }, 15000);
+
+  window[callbackName] = function(result) {
+    clearTimeout(timeout);
+    delete window[callbackName];
+    script.remove();
+
+    if (!result || !result.success) {
+      tbody.textContent =
+        result?.message || 'Unable to load leads.';
+      return;
+    }
 
     tbody.replaceChildren();
 
@@ -170,14 +190,30 @@ async function loadSheetLeads() {
     });
 
     if (!result.leads?.length) {
-      tbody.innerHTML =
-        '<tr><td colspan="6">No leads found in Google Sheets.</td></tr>';
+      const row = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 6;
+      cell.textContent = 'No leads found in Google Sheets.';
+      row.appendChild(cell);
+      tbody.appendChild(row);
     }
-  } catch (error) {
-    console.error('Unable to load leads:', error);
-    tbody.innerHTML =
-      '<tr><td colspan="6">Could not load leads. Check the API connection.</td></tr>';
-  }
+  };
+
+  script.onerror = function() {
+    clearTimeout(timeout);
+    delete window[callbackName];
+    script.remove();
+    tbody.textContent =
+      'Could not load leads. Check Apps Script access.';
+  };
+
+  const separator = GOOGLE_SHEETS_API_URL.includes('?')
+    ? '&' : '?';
+
+  script.src = GOOGLE_SHEETS_API_URL + separator +
+    'callback=' + encodeURIComponent(callbackName);
+
+  document.head.appendChild(script);
 }
 
 loadSheetLeads();
